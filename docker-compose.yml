@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+    #WEB server service
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www/
+            - ./_docker/nginx/conf.d/:/etc/nginx/conf.d
+        ports:
+            - "8080:80"
+        depends_on:
+            - app
+        container_name: app_nginx
+
+    #Application service
+    app:
+        build:
+            context: .
+            dockerfile: _docker/app/Dockerfile
+        volumes:
+            - ./:/var/www
+        container_name: project_app
+
+    #Database service
+    db:
+        container_name: db
+        volumes:
+            - ./tmp/postgres:/var/www/postgres
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: doniyor
+            POSTGRES_PASSWORD: 1209
+            POSTGRES_DB: second_project
+        image: postgres
+
+    #DMT service
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgAdmin
+        ports:
+            - "5050:50"
+        depends_on:
+            - db
+        environment:
+            PGADMIN_DEFAULT_EMAIL: asadullaevdonier@gmail.com
+            PGADMIN_DEFAULT_PASSWORD: 1209
