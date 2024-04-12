@@ -30,9 +30,9 @@ services:
         ports:
             - "5432:5432"
         environment:
-            POSTGRES_USER: doniyor
+            POSTGRES_USER: admin
             POSTGRES_PASSWORD: 1209
-            POSTGRES_DB: second_project
+            POSTGRES_DB: project_db
         image: postgres
 
     #DMT service
@@ -40,7 +40,7 @@ services:
         image: dpage/pgadmin4
         container_name: pgAdmin
         ports:
-            - "5050:50"
+            - "5050:80"
         depends_on:
             - db
         environment:
