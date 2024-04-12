@@ -30,10 +30,10 @@ class ConvertSQLService implements ConvertFileInteface
 
         // Получаем название таблицы
         preg_match('/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+`?(\w+)`?/i', $sqlContent, $matches);
-        $tableName = $matches[1] ?? null;
+        $table_name = $matches[1] ?? null;
 
         // Получаем строки из таблицы
-        $rows = DB::table($tableName)->get();
+        $rows = DB::table($table_name)->get();
 
         // Преобразуем строки в массив
         $data = [];
@@ -42,26 +42,26 @@ class ConvertSQLService implements ConvertFileInteface
         }
 
         // Удаляем таблицу
-        DB::statement("DROP TABLE IF EXISTS $tableName");
+        DB::statement("DROP TABLE IF EXISTS $table_name");
 
         return [
-            'tableName' => $tableName,
-            'rows' => $data,
+            'table_name' => $table_name,
+            'data' => $data,
         ];
     }
 
     public static function convertTo(array $file_data): string
     {
-        $tableName = $file_data['tableName'];
-        $tableData = $file_data['rows'];
+        $table_name = $file_data['table_name'];
+        $tableData = $file_data['data'];
 
         // Если нет данных, просто возвращаем запрос на создание пустой таблицы
         if (empty($tableData)) {
-            return "CREATE TABLE IF NOT EXISTS \"$tableName\" ();\n";
+            return "CREATE TABLE IF NOT EXISTS \"table_name\" ();\n";
         }
 
         // Создаем запрос для создания таблицы
-        $sql = "CREATE TABLE IF NOT EXISTS \"$tableName\" (";
+        $sql = "CREATE TABLE IF NOT EXISTS \"$table_name\" (";
         $columns = array_keys($tableData[0]);
         foreach ($columns as $column) {
             $sql .= "\"$column\" VARCHAR(255), ";
@@ -70,7 +70,7 @@ class ConvertSQLService implements ConvertFileInteface
 
         // Добавляем запросы для вставки данных
         foreach ($tableData as $row) {
-            $sql .= "INSERT INTO \"$tableName\" (";
+            $sql .= "INSERT INTO \"$table_name\" (";
             $sql .= implode(', ', array_keys($row)) . ") VALUES (";
             $values = [];
             foreach ($row as $value) {
@@ -89,7 +89,7 @@ class ConvertSQLService implements ConvertFileInteface
         if (!file_exists($directory)) {
             mkdir($directory, 0777, true);
         }
-        $filename = uniqid($tableName) . '.sql';
+        $filename = uniqid($table_name) . '.sql';
         $filePath = $directory . '/' . $filename;
         file_put_contents($filePath, $sql);
 
