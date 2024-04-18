@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/convert', [\App\Http\Controllers\ConversionController::class, 'convert'])->name('convert');
+Route::post('/convert', [\App\Http\Controllers\ConversionController::class, 'convert'])->name('convert');

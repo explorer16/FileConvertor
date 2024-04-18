@@ -45,7 +45,7 @@ class ConvertCSVService implements ConvertFileInteface
 
         // Возвращаем массив с атрибутами и данными
         return [
-            'table_name' => $filename,
+            'table_name' => 'table',
             'data' => $data
         ];
     }
